@@ -43,19 +43,24 @@ type Model
         , yName : String
         }
 
+
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Loading 
-    , definedDataPath GotText
+    ( Loading
+    , liste
+        |> List.map
+            (\datensatz ->
+                Http.get
+                    { url = "https://raw.githubusercontent.com/jbergner1/Projekt-InformationRetrievel-ChocolateBar/main/" ++ datensatz
+                    , expect = Http.expectString GotText
+                    }
+            )
+        |> Cmd.batch
     )
 
-
-definedDataPath : (Result Http.Error String -> Msg) -> Cmd Msg
-definedDataPath x =
-                Http.get
-                    { url = "https://raw.githubusercontent.com/jbergner1/Projekt-InformationRetrievel-ChocolateBar/main/chocolate.csv"
-                    , expect = Http.expectString x
-                    }
+liste : List String
+liste =
+    [ "chocolate.csv"]
 
 csvString_to_data : String -> List Chocolate
 csvString_to_data csvRaw =
@@ -67,12 +72,12 @@ csvString_to_data csvRaw =
 type alias Chocolate =
     { --company : String
     --, company_location : String
-    index : String
+    company : String
     , ref : Float
     , review_date : Float
     --, country_of_bean_origin : String
     --, specific_bean_origin_or_bar_name : String
-    , cocoa_percent : Float
+   -- , cocoa_percent : Float
     , counts_of_ingedients : Float
     --, beans : String
     --, cocoa_butter : String
@@ -90,14 +95,14 @@ type alias Chocolate =
 decodingChocolate : Csv.Decode.Decoder (Chocolate -> a) a
 decodingChocolate =
     Csv.Decode.map Chocolate
-        (Csv.Decode.field "index" Ok
+        (Csv.Decode.field "company" Ok
             --|> Csv.Decode.andMap (Csv.Decode.field "company"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "company_location"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "review_date"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "country_of_bean_origin"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "specific_bean_origin_or_bar_name"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "ref"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            |> Csv.Decode.andMap (Csv.Decode.field "cocoa_percent"(String.toFloat >> Result.fromMaybe "error parsing string"))
+          --  |> Csv.Decode.andMap (Csv.Decode.field "cocoa_percent"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingedients"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "beans"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "cocoa_butter"(String.toFloat >> Result.fromMaybe "error parsing string"))
@@ -366,7 +371,7 @@ view model =
         Success l ->
             let 
                 choco =
-                    filterAndReduceChocolate l.data .index l.xAAFunction l.yAAFunction l.xName l.yName
+                    filterAndReduceChocolate l.data .name l.xAAFunction l.yAAFunction l.xName l.yName
             in
             Html.div []
                 [
@@ -375,7 +380,7 @@ view model =
                     [ li [] [
                             Html.text <| "X-Achse ändern"
                             , Html.button [ onClick (ChangeX (.counts_of_ingedients, "Ingredients")) ] [ Html.text "Ingredients" ]
-                            , Html.button [ onClick (ChangeX (.cocoa_percent, "% Cacoa")) ] [ Html.text "% Cacoa" ]
+                           -- , Html.button [ onClick (ChangeX (.cocoa_percent, "% Cacoa")) ] [ Html.text "% Cacoa" ]
                             , Html.button [ onClick (ChangeX (.review_date, "Review Year")) ] [ Html.text "Review Year" ]
                             , Html.button [ onClick (ChangeX (.ref, "ref")) ] [ Html.text "ref" ]
                             ]
@@ -384,7 +389,7 @@ view model =
                     [ li [] [
                             Html.text <| "Set Y Value"
                             , Html.button [ onClick (ChangeY (.counts_of_ingedients, "Ingredients")) ] [ Html.text "Ingredients" ]
-                            , Html.button [ onClick (ChangeY (.cocoa_percent, "% Cacoa")) ] [ Html.text "% Cacoa" ]
+                          --  , Html.button [ onClick (ChangeY (.cocoa_percent, "% Cacoa")) ] [ Html.text "% Cacoa" ]
                             , Html.button [ onClick (ChangeY (.review_date, "Review Year")) ] [ Html.text "Review Year" ]
                             , Html.button [ onClick (ChangeY (.ref, "ref")) ] [ Html.text "ref" ]
                             ]

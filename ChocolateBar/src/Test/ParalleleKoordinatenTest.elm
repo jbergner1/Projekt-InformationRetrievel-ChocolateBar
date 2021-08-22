@@ -66,7 +66,7 @@ holenVonCsv x =
 
 liste : List String
 liste =
-    [ "datenMinimal.csv"]
+    [ "chocolate2.csv"]
 
 csvString_to_data : String -> List Chocolate
 csvString_to_data csvRaw =
@@ -78,7 +78,7 @@ csvString_to_data csvRaw =
 type alias Chocolate =
     { index : String
     , review_date : Float
-    , cocoa_percent : Float
+    , cocoa_percent : String
     , ref : Float
     , counts_of_ingedients : Float
     }

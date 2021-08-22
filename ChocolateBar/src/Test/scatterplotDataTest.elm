@@ -45,7 +45,7 @@ init _ =
 
 liste : List String
 liste =
-    [ "chocolate.csv"]
+    [ "chocolate2.csv"]
 
 csvString_to_data : String -> List (String, Maybe Float, Maybe Float)
 csvString_to_data csvRaw =
@@ -57,12 +57,12 @@ csvString_to_data csvRaw =
 decodeStockDay : Csv.Decode.Decoder (( String, Maybe Float, Maybe Float ) -> a) a
 decodeStockDay =
     Csv.Decode.map (\a b c-> ( a, Just b, Just c ))
-        (Csv.Decode.field "company" Ok
+        (Csv.Decode.field "index" Ok
             |> Csv.Decode.andMap
-                (Csv.Decode.field "cocoa_percent" 
+                (Csv.Decode.field "review_date" 
                     (String.toFloat >> Result.fromMaybe "error parsing string")
                     |> Csv.Decode.andMap
-                        (Csv.Decode.field "ref" 
+                        (Csv.Decode.field "rating" 
                             (String.toFloat >> Result.fromMaybe "error parsing string")
                                 
                         )
