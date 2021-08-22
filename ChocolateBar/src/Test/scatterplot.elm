@@ -70,51 +70,19 @@ csvString_to_data csvRaw =
         |> Maybe.withDefault []
 
 type alias Chocolate =
-    { --company : String
-    --, company_location : String
-    name : String
+    { name : String
     , ref : Float
     , review_date : Float
-    --, country_of_bean_origin : String
-    --, specific_bean_origin_or_bar_name : String
-   -- , cocoa_percent : Float
     , counts_of_ingedients : Float
-    --, beans : String
-    --, cocoa_butter : String
-    --, vanilla : String
-    --, lecithin : String
-    --, salt : String
-    --, sugar : String
-    --, sweetener_without_sugar : String
-    --, first_taste : String
-    --, second_taste : String
-    --, third_taste : String
-    --, fourth_taste : String
     }
 
 decodingChocolate : Csv.Decode.Decoder (Chocolate -> a) a
 decodingChocolate =
     Csv.Decode.map Chocolate
         (Csv.Decode.field "name" Ok
-            --|> Csv.Decode.andMap (Csv.Decode.field "company"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "company_location"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "review_date"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "country_of_bean_origin"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "specific_bean_origin_or_bar_name"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "ref"(String.toFloat >> Result.fromMaybe "error parsing string"))
-          --  |> Csv.Decode.andMap (Csv.Decode.field "cocoa_percent"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingedients"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "beans"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "cocoa_butter"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "vanilla"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "lecithin"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "salt"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "sugar"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "sweetener_without_sugar"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "first_taste"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "second_taste"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "third_taste"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            --|> Csv.Decode.andMap (Csv.Decode.field "fourth_taste"(String.toFloat >> Result.fromMaybe "error parsing string"))
         )
 
 type Msg
@@ -233,10 +201,7 @@ scatterplot model =
                 [ x 360 --(Scale.convert xScaleLocal labelPositions.x)
                 , y 35
 
-                --, fontFamily [ "Helvetica", "sans-serif" ]
-                --, fontSize (px 20)
-
-                --, fontWeight FontWeightBold
+               
                 ]
                 [ TypedSvg.Core.text model.xDescription ]
             ]
