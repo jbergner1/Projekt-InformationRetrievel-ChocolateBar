@@ -76,9 +76,9 @@ csvString_to_data csvRaw =
         |> Maybe.withDefault []
 
 type alias Chocolate =
-    { index : String
+    { name : String
     , review_date : Float
-    , cocoa_percent : String
+    , rating : String
     , ref : Float
     , counts_of_ingedients : Float
     }
@@ -86,9 +86,9 @@ type alias Chocolate =
 decodeChocolate : Csv.Decode.Decoder (Chocolate -> a) a
 decodeChocolate =
     Csv.Decode.map Chocolate
-        (Csv.Decode.field "index" Ok
+        (Csv.Decode.field "name" Ok
             |> Csv.Decode.andMap (Csv.Decode.field "review_date"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            |> Csv.Decode.andMap (Csv.Decode.field "cocoa_percent"(String.toFloat >> Result.fromMaybe "error parsing string"))
+            |> Csv.Decode.andMap (Csv.Decode.field "rating"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "ref"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingedients"(String.toFloat >> Result.fromMaybe "error parsing string"))
         )
@@ -108,7 +108,7 @@ update msg model =
         GotText result ->
             case result of
                 Ok fullText ->
-                    ( Success <| { data = chocolateListe [ fullText ], ersteFunktion = .review_date, zweiteFunktion = .cocoa_percent, dritteFunktion = .ref, vierteFunktion = .counts_of_ingedients , ersterName = "Alkohol", zweiterName = "cocoa_percent", dritterName = "Süße", vierterName = "Säuregehalt"}, Cmd.none )
+                    ( Success <| { data = chocolateListe [ fullText ], ersteFunktion = .review_date, zweiteFunktion = .rating, dritteFunktion = .ref, vierteFunktion = .counts_of_ingedients , ersterName = "Alkohol", zweiterName = "rating", dritterName = "Süße", vierterName = "Säuregehalt"}, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -311,7 +311,7 @@ view model =
                             ]
 
                         plotDaten = 
-                            multiDimDaten l.data l.ersteFunktion l.zweiteFunktion l.dritteFunktion l.vierteFunktion .index l.ersterName l.zweiterName l.dritterName l.vierterName       
+                            multiDimDaten l.data l.ersteFunktion l.zweiteFunktion l.dritteFunktion l.vierteFunktion .name l.ersterName l.zweiterName l.dritterName l.vierterName       
                     in
                     Html.div []
                         [
@@ -319,7 +319,7 @@ view model =
                                 li[][
                                     Html.text <| "Suchen eine Eigenschaft für die erste Spalte aus"
                                     , Html.button [onClick (Ändere1 (.review_date, "Durchschnittlicher Alkoholgehalt"))][Html.text "Alkoholgehalt"]
-                                    , Html.button [onClick (Ändere1 (.cocoa_percent, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
+                                    , Html.button [onClick (Ändere1 (.rating, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
                                     , Html.button [onClick (Ändere1 (.ref, "Süße"))][Html.text "Süße"]
                                     , Html.button [onClick (Ändere1 (.counts_of_ingedients, "Säuregehalt"))][Html.text "Säuregehalt"]
                                 ]
@@ -328,7 +328,7 @@ view model =
                                 li[][
                                     Html.text <| "Suchen eine Eigenschaft für die zweite Spalte aus"
                                     , Html.button [onClick (Ändere2 (.review_date, "Durchschnittlicher Alkoholgehalt"))][Html.text "Alkoholgehalt"]
-                                    , Html.button [onClick (Ändere2 (.cocoa_percent, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
+                                    , Html.button [onClick (Ändere2 (.rating, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
                                     , Html.button [onClick (Ändere2 (.ref, "Süße"))][Html.text "Süße"]
                                     , Html.button [onClick (Ändere2 (.counts_of_ingedients, "Säuregehalt"))][Html.text "Säuregehalt"]
                                 ]
@@ -337,7 +337,7 @@ view model =
                                 li[][
                                     Html.text <| "Suchen eine Eigenschaft für die dritte Spalte aus"
                                     , Html.button [onClick (Ändere3 (.review_date, "Durchschnittlicher Alkoholgehalt"))][Html.text "Alkoholgehalt"]
-                                    , Html.button [onClick (Ändere3 (.cocoa_percent, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
+                                    , Html.button [onClick (Ändere3 (.rating, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
                                     , Html.button [onClick (Ändere3 (.ref, "Süße"))][Html.text "Süße"]
                                     , Html.button [onClick (Ändere3 (.counts_of_ingedients, "Säuregehalt"))][Html.text "Säuregehalt"]
                                 ]
@@ -346,7 +346,7 @@ view model =
                                 li[][
                                     Html.text <| "Suchen eine Eigenschaft für die vierte Spalte aus"
                                     , Html.button [onClick (Ändere4 (.review_date, "Durchschnittlicher Alkoholgehalt"))][Html.text "Alkoholgehalt"]
-                                    , Html.button [onClick (Ändere4 (.cocoa_percent, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
+                                    , Html.button [onClick (Ändere4 (.rating, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
                                     , Html.button [onClick (Ändere4 (.ref, "Süße"))][Html.text "Süße"]
                                     , Html.button [onClick (Ändere4 (.counts_of_ingedients, "Säuregehalt"))][Html.text "Säuregehalt"]
                                 ]

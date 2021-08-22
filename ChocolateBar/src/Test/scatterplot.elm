@@ -60,7 +60,7 @@ init _ =
 
 liste : List String
 liste =
-    [ "chocolate.csv"]
+    [ "chocolate2.csv"]
 
 csvString_to_data : String -> List Chocolate
 csvString_to_data csvRaw =
@@ -72,7 +72,7 @@ csvString_to_data csvRaw =
 type alias Chocolate =
     { --company : String
     --, company_location : String
-    company : String
+    name : String
     , ref : Float
     , review_date : Float
     --, country_of_bean_origin : String
@@ -95,7 +95,7 @@ type alias Chocolate =
 decodingChocolate : Csv.Decode.Decoder (Chocolate -> a) a
 decodingChocolate =
     Csv.Decode.map Chocolate
-        (Csv.Decode.field "company" Ok
+        (Csv.Decode.field "name" Ok
             --|> Csv.Decode.andMap (Csv.Decode.field "company"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "company_location"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "review_date"(String.toFloat >> Result.fromMaybe "error parsing string"))
@@ -233,8 +233,8 @@ scatterplot model =
                 [ x 360 --(Scale.convert xScaleLocal labelPositions.x)
                 , y 35
 
-                , fontFamily [ "Helvetica", "sans-serif" ]
-                , fontSize (px 20)
+                --, fontFamily [ "Helvetica", "sans-serif" ]
+                --, fontSize (px 20)
 
                 --, fontWeight FontWeightBold
                 ]
@@ -247,7 +247,7 @@ scatterplot model =
                 , y -30
 
                 -- , fontFamily [ "Helvetica", "sans-serif" ]
-                , fontSize (px 20)
+                --, fontSize (px 20)
 
                 --, fontWeight FontWeightBold
                 ]
