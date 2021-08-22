@@ -15,7 +15,7 @@ import TypedSvg exposing (circle, g, rect, style, svg, text_)
 import TypedSvg.Attributes exposing (class, fontFamily, fontSize, textAnchor, transform, viewBox)
 import TypedSvg.Attributes.InPx exposing (cx, cy, height, r, width, x, y)
 import TypedSvg.Core exposing (Svg, text)
-import TypedSvg.Types exposing (AnchorAlignment(..), Length(..), Transform(..))
+import TypedSvg.Types exposing (AnchorAlignment(..), Length(..), Transform(..), px)
 import TypedSvg.Attributes exposing (name)
 import Html exposing (ul)
 import Html exposing (li)
@@ -144,17 +144,18 @@ scatterplot model =
             }
     in
 --ab hier vielleicht noch was ändern, je nach Aussehen
-     svg [ viewBox 0 0 w h, TypedSvg.Attributes.width <| TypedSvg.Types.Percent 100, TypedSvg.Attributes.height <| TypedSvg.Types.Percent 100 ]
+    svg [ viewBox 0 0 w h, TypedSvg.Attributes.width <| TypedSvg.Types.Percent 80, TypedSvg.Attributes.height <| TypedSvg.Types.Percent 80 ]
         [ style [] [ TypedSvg.Core.text """
-            .point circle { stroke: rgba(0, 0, 0,0.4); fill: rgba(255, 255, 255,0.3); }
+            .point circle { stroke: rgba(0, 0, 155,0.05); fill: rgba(0, 0, 155,0.05); }
             .point text { display: none; }
             .point:hover circle { stroke: rgba(0, 0, 0,1.0); fill: rgb(118, 214, 78); }
             .point:hover text { display: inline; }
+            
           """ ]
         , g [ transform [ Translate 60 390 ] ]
             [ xAxis xValues
             , text_
-                [ x (Scale.convert xScaleLocal labelPositions.x)
+                [ x 360 --(Scale.convert xScaleLocal labelPositions.x)
                 , y 35
 
                 -- , fontFamily [ "Helvetica", "sans-serif" ]
@@ -178,8 +179,9 @@ scatterplot model =
                 [ TypedSvg.Core.text model.yDescription ]
             ]
         , g [ transform [ Translate padding padding ] ]
-            (List.map (point xScaleLocal yScaleLocal) model.data)
-        ]     
+            
+            (List.map (\n -> point xScaleLocal yScaleLocal n model.data) model.data)
+        ] 
  
 
 type alias Point =
@@ -220,10 +222,6 @@ pointName : Chocolate -> (Chocolate -> String) -> (Chocolate -> Float) -> (Choco
 pointName choco a b c d e  =
     Point (a choco ++ ", " ++ d ++ ": " ++ String.fromFloat (b choco) ++ "," ++ e ++ ": " ++ String.fromFloat (c choco)) (b choco) (c choco)
 
--- carToMaybePoints : Car -> Maybe Point
--- carToMaybePoints car =
-   -- Maybe.map3 carName (Just car.vehicleName) car.cityMPG car.retailPrice
-
 --Main 
 
 main =
@@ -256,7 +254,7 @@ init _ =
 definedDataPath : (Result Http.Error String -> Msg) -> Cmd Msg
 definedDataPath x =
                 Http.get
-                    { url = "https://raw.githubusercontent.com/jbergner1/Projekt-InformationRetrievel-ChocolateBar/main/chocolate.csv"
+                    { url = "https://raw.githubusercontent.com/jbergner1/Projekt-InformationRetrievel-ChocolateBar/main/DatenÜberarbeitet.csv"
                     , expect = Http.expectString x
                     }
 
@@ -275,7 +273,7 @@ type alias Chocolate =
     --, country_of_bean_origin : String
     --, specific_bean_origin_or_bar_name : String
     , cocoa_percent : Float
-    , rating : Float
+    , ref : Float
     , counts_of_ingedients : Float
     --, beans : String
     --, cocoa_butter : String
@@ -300,7 +298,7 @@ decodingChocolate =
             --|> Csv.Decode.andMap (Csv.Decode.field "country_of_bean_origin"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "specific_bean_origin_or_bar_name"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "cocoa_percent"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            |> Csv.Decode.andMap (Csv.Decode.field "rating"(String.toFloat >> Result.fromMaybe "error parsing string"))
+            |> Csv.Decode.andMap (Csv.Decode.field "ref"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingedients"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "beans"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "cocoa_butter"(String.toFloat >> Result.fromMaybe "error parsing string"))
@@ -327,7 +325,7 @@ update msg model =
         GotText result ->
             case result of
                 Ok fullText ->
-                    ( Success <| { data = chocolateList [ fullText ], xAAFunction = .review_date, yAAFunction = .rating , xName = "Review Date", yName = "Rating"}, Cmd.none )
+                    ( Success <| { data = chocolateList [ fullText ], xAAFunction = .review_date, yAAFunction = .ref , xName = "Review Date", yName = "ref"}, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -383,7 +381,7 @@ view model =
                             , Html.button [ onClick (ChangeX (.counts_of_ingedients, "Ingredients")) ] [ Html.text "Ingredients" ]
                             , Html.button [ onClick (ChangeX (.cocoa_percent, "% Cacoa")) ] [ Html.text "% Cacoa" ]
                             , Html.button [ onClick (ChangeX (.review_date, "Review Year")) ] [ Html.text "Review Year" ]
-                            , Html.button [ onClick (ChangeX (.rating, "Rating")) ] [ Html.text "Rating" ]
+                            , Html.button [ onClick (ChangeX (.ref, "ref")) ] [ Html.text "ref" ]
                             ]
                     ]
                 , ul []
@@ -392,7 +390,7 @@ view model =
                             , Html.button [ onClick (ChangeY (.counts_of_ingedients, "Ingredients")) ] [ Html.text "Ingredients" ]
                             , Html.button [ onClick (ChangeY (.cocoa_percent, "% Cacoa")) ] [ Html.text "% Cacoa" ]
                             , Html.button [ onClick (ChangeY (.review_date, "Review Year")) ] [ Html.text "Review Year" ]
-                            , Html.button [ onClick (ChangeY (.rating, "Rating")) ] [ Html.text "Rating" ]
+                            , Html.button [ onClick (ChangeY (.ref, "ref")) ] [ Html.text "ref" ]
                             ]
                     ]            
                 --  , Html.input [ Html.Attributes.placeholder "Age", Html.Attributes.value model.content, onInput Change ]
