@@ -53,7 +53,7 @@ init _ =
 definedDataPath : (Result Http.Error String -> Msg) -> Cmd Msg
 definedDataPath x =
                 Http.get
-                    { url = "https://raw.githubusercontent.com/jbergner1/Projekt-InformationRetrievel-ChocolateBar/main/DatenÜberarbeitet.csv"
+                    { url = "https://raw.githubusercontent.com/jbergner1/Projekt-InformationRetrievel-ChocolateBar/main/chocolate.csv"
                     , expect = Http.expectString x
                     }
 
@@ -67,12 +67,12 @@ csvString_to_data csvRaw =
 type alias Chocolate =
     { --company : String
     --, company_location : String
-    index : String
+    company : String
+    , ref : Float
     , review_date : Float
     --, country_of_bean_origin : String
     --, specific_bean_origin_or_bar_name : String
     , cocoa_percent : Float
-    , ref : Float
     , counts_of_ingedients : Float
     --, beans : String
     --, cocoa_butter : String
@@ -90,14 +90,14 @@ type alias Chocolate =
 decodingChocolate : Csv.Decode.Decoder (Chocolate -> a) a
 decodingChocolate =
     Csv.Decode.map Chocolate
-        (Csv.Decode.field "index" Ok
+        (Csv.Decode.field "company" Ok
             --|> Csv.Decode.andMap (Csv.Decode.field "company"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "company_location"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "review_date"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "country_of_bean_origin"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "specific_bean_origin_or_bar_name"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            |> Csv.Decode.andMap (Csv.Decode.field "cocoa_percent"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "ref"(String.toFloat >> Result.fromMaybe "error parsing string"))
+            |> Csv.Decode.andMap (Csv.Decode.field "cocoa_percent"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingedients"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "beans"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "cocoa_butter"(String.toFloat >> Result.fromMaybe "error parsing string"))
@@ -366,7 +366,7 @@ view model =
         Success l ->
             let 
                 choco =
-                    filterAndReduceChocolate l.data .index l.xAAFunction l.yAAFunction l.xName l.yName
+                    filterAndReduceChocolate l.data .company l.xAAFunction l.yAAFunction l.xName l.yName
             in
             Html.div []
                 [
