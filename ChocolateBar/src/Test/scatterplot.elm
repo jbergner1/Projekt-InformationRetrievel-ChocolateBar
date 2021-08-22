@@ -73,7 +73,7 @@ type alias Chocolate =
     { name : String
     , ref : Float
     , review_date : Float
-    , counts_of_ingedients : Float
+    , counts_of_ingredients : Float
     }
 
 decodingChocolate : Csv.Decode.Decoder (Chocolate -> a) a
@@ -82,7 +82,7 @@ decodingChocolate =
         (Csv.Decode.field "name" Ok
             |> Csv.Decode.andMap (Csv.Decode.field "review_date"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "ref"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingedients"(String.toFloat >> Result.fromMaybe "error parsing string"))
+            |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingredients"(String.toFloat >> Result.fromMaybe "error parsing string"))
         )
 
 type Msg
@@ -97,7 +97,7 @@ update msg model =
         GotText result ->
             case result of
                 Ok fullText ->
-                    ( Success <| { data = chocolateList [ fullText ], xAAFunction = .review_date, yAAFunction = .ref , xName = "Review Date", yName = "ref"}, Cmd.none )
+                    ( Success <| { data = chocolateList [ fullText ], xAAFunction = .counts_of_ingredients, yAAFunction = .ref , xName = "Review Date", yName = "ref"}, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -344,7 +344,7 @@ view model =
                  ,ul []
                     [ li [] [
                             Html.text <| "X-Achse ändern"
-                            , Html.button [ onClick (ChangeX (.counts_of_ingedients, "Ingredients")) ] [ Html.text "Ingredients" ]
+                            , Html.button [ onClick (ChangeX (.counts_of_ingredients, "Ingredients")) ] [ Html.text "Ingredients" ]
                            -- , Html.button [ onClick (ChangeX (.cocoa_percent, "% Cacoa")) ] [ Html.text "% Cacoa" ]
                             , Html.button [ onClick (ChangeX (.review_date, "Review Year")) ] [ Html.text "Review Year" ]
                             , Html.button [ onClick (ChangeX (.ref, "ref")) ] [ Html.text "ref" ]
@@ -353,7 +353,7 @@ view model =
                 , ul []
                     [ li [] [
                             Html.text <| "Set Y Value"
-                            , Html.button [ onClick (ChangeY (.counts_of_ingedients, "Ingredients")) ] [ Html.text "Ingredients" ]
+                            , Html.button [ onClick (ChangeY (.counts_of_ingredients, "Ingredients")) ] [ Html.text "Ingredients" ]
                           --  , Html.button [ onClick (ChangeY (.cocoa_percent, "% Cacoa")) ] [ Html.text "% Cacoa" ]
                             , Html.button [ onClick (ChangeY (.review_date, "Review Year")) ] [ Html.text "Review Year" ]
                             , Html.button [ onClick (ChangeY (.ref, "ref")) ] [ Html.text "ref" ]

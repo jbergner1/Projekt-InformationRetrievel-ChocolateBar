@@ -196,7 +196,7 @@ scatterplot model =
 
                 --, fontWeight FontWeightBold
                 ]
-                [ TypedSvg.Core.text "Preis" ]
+                [ TypedSvg.Core.text "Bewertung" ]
             ]
         , g [ transform [ Translate 60 60 ] ]
             [ yAxis yValues
@@ -209,7 +209,7 @@ scatterplot model =
 
                 --, fontWeight FontWeightBold
                 ]
-                [ TypedSvg.Core.text "Jahr" ]
+                [ TypedSvg.Core.text "Anzahl an Zutaten" ]
             ]
         , g [ transform [ Translate padding padding ] ]
             (List.map (point xScaleLocal yScaleLocal) model.data)
@@ -300,7 +300,7 @@ yAxis values =
 
 filterAndReduceWines : List (String, Float, Float) -> XyData
 filterAndReduceWines my_winesList =
-    XyData "Preis" "Jahr" (List.map pointName my_winesList)
+    XyData "Bewertung" "Anzahl an Zutaten" (List.map pointName my_winesList)
 
 
 pointName : (String, Float, Float) -> Point

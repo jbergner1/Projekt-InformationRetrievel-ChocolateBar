@@ -80,7 +80,7 @@ type alias Chocolate =
     , review_date : Float
     , rating : String
     , ref : Float
-    , counts_of_ingedients : Float
+    , counts_of_ingredients : Float
     }
 
 decodeChocolate : Csv.Decode.Decoder (Chocolate -> a) a
@@ -90,7 +90,7 @@ decodeChocolate =
             |> Csv.Decode.andMap (Csv.Decode.field "review_date"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "rating"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "ref"(String.toFloat >> Result.fromMaybe "error parsing string"))
-            |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingedients"(String.toFloat >> Result.fromMaybe "error parsing string"))
+            |> Csv.Decode.andMap (Csv.Decode.field "counts_of_ingredients"(String.toFloat >> Result.fromMaybe "error parsing string"))
         )
 
 
@@ -108,7 +108,7 @@ update msg model =
         GotText result ->
             case result of
                 Ok fullText ->
-                    ( Success <| { data = chocolateListe [ fullText ], ersteFunktion = .review_date, zweiteFunktion = .rating, dritteFunktion = .ref, vierteFunktion = .counts_of_ingedients , ersterName = "Alkohol", zweiterName = "rating", dritterName = "Süße", vierterName = "Säuregehalt"}, Cmd.none )
+                    ( Success <| { data = chocolateListe [ fullText ], ersteFunktion = .review_date, zweiteFunktion = .rating, dritteFunktion = .ref, vierteFunktion = .counts_of_ingredients , ersterName = "Alkohol", zweiterName = "rating", dritterName = "Süße", vierterName = "Säuregehalt"}, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -321,7 +321,7 @@ view model =
                                     , Html.button [onClick (Ändere1 (.review_date, "Durchschnittlicher Alkoholgehalt"))][Html.text "Alkoholgehalt"]
                                     , Html.button [onClick (Ändere1 (.rating, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
                                     , Html.button [onClick (Ändere1 (.ref, "Süße"))][Html.text "Süße"]
-                                    , Html.button [onClick (Ändere1 (.counts_of_ingedients, "Säuregehalt"))][Html.text "Säuregehalt"]
+                                    , Html.button [onClick (Ändere1 (.counts_of_ingredients, "Säuregehalt"))][Html.text "Säuregehalt"]
                                 ]
                             ]
                             , ul[][
@@ -330,7 +330,7 @@ view model =
                                     , Html.button [onClick (Ändere2 (.review_date, "Durchschnittlicher Alkoholgehalt"))][Html.text "Alkoholgehalt"]
                                     , Html.button [onClick (Ändere2 (.rating, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
                                     , Html.button [onClick (Ändere2 (.ref, "Süße"))][Html.text "Süße"]
-                                    , Html.button [onClick (Ändere2 (.counts_of_ingedients, "Säuregehalt"))][Html.text "Säuregehalt"]
+                                    , Html.button [onClick (Ändere2 (.counts_of_ingredients, "Säuregehalt"))][Html.text "Säuregehalt"]
                                 ]
                             ]
                             , ul[][
@@ -339,7 +339,7 @@ view model =
                                     , Html.button [onClick (Ändere3 (.review_date, "Durchschnittlicher Alkoholgehalt"))][Html.text "Alkoholgehalt"]
                                     , Html.button [onClick (Ändere3 (.rating, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
                                     , Html.button [onClick (Ändere3 (.ref, "Süße"))][Html.text "Süße"]
-                                    , Html.button [onClick (Ändere3 (.counts_of_ingedients, "Säuregehalt"))][Html.text "Säuregehalt"]
+                                    , Html.button [onClick (Ändere3 (.counts_of_ingredients, "Säuregehalt"))][Html.text "Säuregehalt"]
                                 ]
                             ]
                             , ul[][
@@ -348,7 +348,7 @@ view model =
                                     , Html.button [onClick (Ändere4 (.review_date, "Durchschnittlicher Alkoholgehalt"))][Html.text "Alkoholgehalt"]
                                     , Html.button [onClick (Ändere4 (.rating, "Durchschnittliche Trinktemperatur"))][Html.text "Trinktemperatur"]
                                     , Html.button [onClick (Ändere4 (.ref, "Süße"))][Html.text "Süße"]
-                                    , Html.button [onClick (Ändere4 (.counts_of_ingedients, "Säuregehalt"))][Html.text "Säuregehalt"]
+                                    , Html.button [onClick (Ändere4 (.counts_of_ingredients, "Säuregehalt"))][Html.text "Säuregehalt"]
                                 ]
                              ]
                                 ,parallelCoodinatesPlot 600 2 plotDaten
