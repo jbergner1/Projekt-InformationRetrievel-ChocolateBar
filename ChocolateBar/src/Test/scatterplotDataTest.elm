@@ -57,12 +57,12 @@ csvString_to_data csvRaw =
 decodeStockDay : Csv.Decode.Decoder (( String, Maybe Float, Maybe Float ) -> a) a
 decodeStockDay =
     Csv.Decode.map (\a b c-> ( a, Just b, Just c ))
-        (Csv.Decode.field "company_location" Ok
+        (Csv.Decode.field "company" Ok
             |> Csv.Decode.andMap
                 (Csv.Decode.field "rating" 
                     (String.toFloat >> Result.fromMaybe "error parsing string")
                     |> Csv.Decode.andMap
-                        (Csv.Decode.field "review_date" 
+                        (Csv.Decode.field "ref" 
                             (String.toFloat >> Result.fromMaybe "error parsing string")
                                 
                         )

@@ -67,7 +67,7 @@ csvString_to_data csvRaw =
 type alias Chocolate =
     { --company : String
     --, company_location : String
-    company : String
+    index : String
     , ref : Float
     , review_date : Float
     --, country_of_bean_origin : String
@@ -90,7 +90,7 @@ type alias Chocolate =
 decodingChocolate : Csv.Decode.Decoder (Chocolate -> a) a
 decodingChocolate =
     Csv.Decode.map Chocolate
-        (Csv.Decode.field "company" Ok
+        (Csv.Decode.field "index" Ok
             --|> Csv.Decode.andMap (Csv.Decode.field "company"(String.toFloat >> Result.fromMaybe "error parsing string"))
             --|> Csv.Decode.andMap (Csv.Decode.field "company_location"(String.toFloat >> Result.fromMaybe "error parsing string"))
             |> Csv.Decode.andMap (Csv.Decode.field "review_date"(String.toFloat >> Result.fromMaybe "error parsing string"))
@@ -366,7 +366,7 @@ view model =
         Success l ->
             let 
                 choco =
-                    filterAndReduceChocolate l.data .company l.xAAFunction l.yAAFunction l.xName l.yName
+                    filterAndReduceChocolate l.data .index l.xAAFunction l.yAAFunction l.xName l.yName
             in
             Html.div []
                 [
