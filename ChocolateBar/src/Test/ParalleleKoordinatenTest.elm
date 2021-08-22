@@ -66,7 +66,7 @@ holenVonCsv x =
 
 liste : List String
 liste =
-    [ "DatenÜberarbeitet.csv"]
+    [ "datenMinimal.csv"]
 
 csvString_to_data : String -> List Chocolate
 csvString_to_data csvRaw =
