@@ -21,207 +21,6 @@ import Html exposing (ul)
 import Html exposing (li)
 import Html.Events exposing (onClick)
 
-w : Float
-w =
-    900
-
-
-h : Float
-h =
-    450
-
-
-padding : Float
-padding =
-    60
-
-
-radius : Float
-radius =
-    5.0
-
-
-tickCount : Int
-tickCount =
-    5
-
-defaultExtent : ( number, number1 )
-defaultExtent =
-    ( 0, 100 )
-
-wideExtent : List Float -> ( Float, Float )
-wideExtent values =
-    let
-        result =
-            Maybe.withDefault ( 0, 0 )
-                (Statistics.extent values)
-
-        max =
-            Maybe.withDefault 0
-                (List.maximum values)
-
-        result1 =
-            sum result (toFloat tickCount * max / 50)
-
-        result2 =
-            sum result1 0.0
-    in
-    result2
-
-xScale : List Float -> ContinuousScale Float
-xScale values =
-    Scale.linear ( 0, w - 2 * padding ) ( wideExtent values )
-
-yScale : List Float -> ContinuousScale Float
-yScale values =
-    Scale.linear ( h - 2 * padding, 0 ) ( wideExtent values )
-
-sum : ( Float, Float ) -> Float -> ( Float, Float )
-sum ( min, max ) shift =
-    if min <= 0 then
-        ( 0, max + shift )
-
-    else
-        ( min - shift, max + shift )
-
-xAxis : List Float -> Svg msg
-xAxis values =
-    Axis.bottom [ Axis.tickCount tickCount ] (xScale values)
-
-
-yAxis : List Float -> Svg msg
-yAxis values =
-    Axis.left [ Axis.tickCount tickCount ] (yScale values)
-
-point : ContinuousScale Float -> ContinuousScale Float -> Point -> List Point -> Svg msg
-point scaleX scaleY xyPoint pointList=
-    let
-        xPosition = (Scale.convert scaleX xyPoint.x)
-        yPosition = (Scale.convert scaleY xyPoint.y)
-    in
-        g 
-            [ class [ "point" ]
-            , fontSize <| Px 10.0
-            , fontFamily [ "sans-serif" ] 
-            ]
-        [ circle 
-            [ cx xPosition
-            , cy yPosition
-            , r radius 
-            ] []
-        , text_ 
-            [ textAnchor AnchorMiddle
-            , transform [ Translate xPosition (yPosition - (1.5 * radius)) ] ] [ text xyPoint.pointName ]
-        ]
-
-scatterplot : XyData -> Svg msg
-scatterplot model =
-    let     
-        xValues : List Float
-        xValues =
-            List.map .x model.data
-
-        yValues : List Float
-        yValues =
-            List.map .y model.data
-
-        xScaleLocal : ContinuousScale Float
-        xScaleLocal =
-            xScale xValues
-
-        yScaleLocal : ContinuousScale Float
-        yScaleLocal =
-            yScale yValues
-
-        half : ( Float, Float ) -> Float
-        half t =
-            (Tuple.second t - Tuple.first t) / 2
-
-        labelPositions : { x : Float, y : Float }
-        labelPositions =
-            { x = wideExtent xValues |> half
-            , y = wideExtent yValues |> Tuple.second
-            }
-    in
---ab hier vielleicht noch was ändern, je nach Aussehen
-    svg [ viewBox 0 0 w h, TypedSvg.Attributes.width <| TypedSvg.Types.Percent 80, TypedSvg.Attributes.height <| TypedSvg.Types.Percent 80 ]
-        [ style [] [ TypedSvg.Core.text """
-            .point circle { stroke: rgba(0, 0, 155,0.05); fill: rgba(0, 0, 155,0.05); }
-            .point text { display: none; }
-            .point:hover circle { stroke: rgba(0, 0, 0,1.0); fill: rgb(118, 214, 78); }
-            .point:hover text { display: inline; }
-            
-          """ ]
-        , g [ transform [ Translate 60 390 ] ]
-            [ xAxis xValues
-            , text_
-                [ x 360 --(Scale.convert xScaleLocal labelPositions.x)
-                , y 35
-
-                -- , fontFamily [ "Helvetica", "sans-serif" ]
-                , fontSize (px 20)
-
-                --, fontWeight FontWeightBold
-                ]
-                [ TypedSvg.Core.text model.xDescription ]
-            ]
-        , g [ transform [ Translate 60 60 ] ]
-            [ yAxis yValues
-            , text_
-                [ x -30
-                , y -30
-
-                -- , fontFamily [ "Helvetica", "sans-serif" ]
-                , fontSize (px 20)
-
-                --, fontWeight FontWeightBold
-                ]
-                [ TypedSvg.Core.text model.yDescription ]
-            ]
-        , g [ transform [ Translate padding padding ] ]
-            
-            (List.map (\n -> point xScaleLocal yScaleLocal n model.data) model.data)
-        ] 
- 
-
-type alias Point =
-    { pointName : String, x : Float, y : Float }
-
-
-type alias XyData =
-    { xDescription : String
-    , yDescription : String
-    , data : List Point
-    }
-
-
-filterAndReduceChocolate : List Chocolate -> (Chocolate -> String) -> (Chocolate -> Float) -> (Chocolate -> Float) -> String -> String -> XyData
-filterAndReduceChocolate chocolatelist a b c x y =
-    XyData x y (List.map (\n -> pointName n a b c x y) chocolatelist)
-
-filterX : Point -> List Point -> List Point
-filterX a b =
-    let
-        isEqual : Point -> Point -> Maybe Point
-        isEqual t z =
-            if z.x == t.x && z.y == t.y then 
-                Just z
-
-            else
-                Nothing
-    in
-    List.filterMap (isEqual a) b  
-
-
-
-sumX : Point -> List Point ->  Int
-sumX e f=
-    List.length (filterX e f) 
-
-pointName : Chocolate -> (Chocolate -> String) -> (Chocolate -> Float) -> (Chocolate -> Float) -> String -> String -> Point
-pointName choco a b c d e  =
-    Point (a choco ++ ", " ++ d ++ ": " ++ String.fromFloat (b choco) ++ "," ++ e ++ ": " ++ String.fromFloat (c choco)) (b choco) (c choco)
-
 --Main 
 
 main =
@@ -356,6 +155,204 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
+
+w : Float
+w =
+    900
+
+
+h : Float
+h =
+    450
+
+
+padding : Float
+padding =
+    60
+
+
+radius : Float
+radius =
+    5.0
+
+
+tickCount : Int
+tickCount =
+    5
+
+defaultExtent : ( number, number1 )
+defaultExtent =
+    ( 0, 100 )
+
+scatterplot : XyData -> Svg msg
+scatterplot model =
+    let     
+        xValues : List Float
+        xValues =
+            List.map .x model.data
+
+        yValues : List Float
+        yValues =
+            List.map .y model.data
+
+        xScaleLocal : ContinuousScale Float
+        xScaleLocal =
+            xScale xValues
+
+        yScaleLocal : ContinuousScale Float
+        yScaleLocal =
+            yScale yValues
+
+        half : ( Float, Float ) -> Float
+        half t =
+            (Tuple.second t - Tuple.first t) / 2
+
+        labelPositions : { x : Float, y : Float }
+        labelPositions =
+            { x = wideExtent xValues |> half
+            , y = wideExtent yValues |> Tuple.second
+            }
+    in
+
+    svg [ viewBox 0 0 w h, TypedSvg.Attributes.width <| TypedSvg.Types.Percent 100, TypedSvg.Attributes.height <| TypedSvg.Types.Percent 100 ]
+        [ style [] [ TypedSvg.Core.text """
+            .point circle { stroke: rgba(0, 0, 155,0.05); fill: rgba(0, 0, 155,0.05); }
+            .point text { display: none; }
+            .point:hover circle { stroke: rgba(0, 0, 0,1.0); fill: rgb(118, 214, 78); }
+            .point:hover text { display: inline; }
+            
+          """ ]
+        , g [ transform [ Translate 60 390 ] ]
+            [ xAxis xValues
+            , text_
+                [ x 360 --(Scale.convert xScaleLocal labelPositions.x)
+                , y 35
+
+                , fontFamily [ "Helvetica", "sans-serif" ]
+                , fontSize (px 20)
+
+                --, fontWeight FontWeightBold
+                ]
+                [ TypedSvg.Core.text model.xDescription ]
+            ]
+        , g [ transform [ Translate 60 60 ] ]
+            [ yAxis yValues
+            , text_
+                [ x -30
+                , y -30
+
+                -- , fontFamily [ "Helvetica", "sans-serif" ]
+                , fontSize (px 20)
+
+                --, fontWeight FontWeightBold
+                ]
+                [ TypedSvg.Core.text model.yDescription ]
+            ]
+        , g [ transform [ Translate padding padding ] ]
+            
+            (List.map (\n -> point xScaleLocal yScaleLocal n model.data) model.data)
+        ] 
+ 
+point : ContinuousScale Float -> ContinuousScale Float -> Point  -> List Point -> Svg msg -- List Point
+point scaleX scaleY xyPoint pointList=
+    g
+        [ class [ "point" ]
+        , fontSize <| Px 15.0
+        , fontFamily [ "serif" ]
+        , transform
+            [ Translate
+                (Scale.convert scaleX xyPoint.x)
+                (Scale.convert scaleY xyPoint.y)
+            ]
+        ]
+        [ circle [ cx 0, cy 0, r 3 ] []
+        , text_ [ x 10, y -20, textAnchor AnchorMiddle ] [ Html.text xyPoint.pointName ]
+        , text_ [ x 10, y -40, textAnchor AnchorMiddle ] [ Html.text <|"Anzahl: " ++ String.fromInt(sumX xyPoint pointList) ]
+        ]
+
+type alias XyData =
+    { xDescription : String
+    , yDescription : String
+    , data : List Point
+    }
+
+
+xScale : List Float -> ContinuousScale Float
+xScale values =
+    Scale.linear ( 0, w - 2 * padding ) ( wideExtent values )
+
+yScale : List Float -> ContinuousScale Float
+yScale values =
+    Scale.linear ( h - 2 * padding, 0 ) ( wideExtent values )
+
+addieren : ( Float, Float ) -> Float -> ( Float, Float )
+addieren ( min, max ) shift =
+    if min <= 0 then
+        ( 0, max + shift )
+
+    else
+        ( min - shift, max + shift )
+
+wideExtent : List Float -> ( Float, Float )
+wideExtent values =
+    let
+        result =
+            Maybe.withDefault ( 0, 0 )
+                (Statistics.extent values)
+
+        max =
+            Maybe.withDefault 0
+                (List.maximum values)
+
+        result1 =
+            addieren result (toFloat tickCount * max / 50)
+
+        result2 =
+            addieren result1 0.0
+    in
+    result2
+
+xAxis : List Float -> Svg msg
+xAxis values =
+    Axis.bottom [ Axis.tickCount tickCount ] (xScale values)
+
+
+yAxis : List Float -> Svg msg
+yAxis values =
+    Axis.left [ Axis.tickCount tickCount ] (yScale values)
+
+filterAndReduceChocolate : List Chocolate -> (Chocolate -> String) -> (Chocolate -> Float) -> (Chocolate -> Float) -> String -> String -> XyData
+filterAndReduceChocolate chocolatelist a b c x y =
+    XyData x y (List.map (\n -> pointName n a b c x y) chocolatelist)
+
+filterX : Point -> List Point -> List Point
+filterX a b =
+    let
+        isEqual : Point -> Point -> Maybe Point
+        isEqual t z =
+            if z.x == t.x && z.y == t.y then 
+                Just z
+
+            else
+                Nothing
+    in
+    List.filterMap (isEqual a) b  
+
+
+
+sumX : Point -> List Point ->  Int
+sumX e f=
+    List.length (filterX e f) 
+
+type alias Point =
+  { pointName : String, x : Float, y : Float }
+
+pointName : Chocolate -> (Chocolate -> String) -> (Chocolate -> Float) -> (Chocolate -> Float) -> String -> String -> Point
+pointName choco a b c d e  =
+    Point (a choco ++ ", " ++ d ++ ": " ++ String.fromFloat (b choco) ++ "," ++ e ++ ": " ++ String.fromFloat (c choco)) (b choco) (c choco)
+
+
+
 view : Model -> Html Msg
 view model =
     case model of
@@ -368,7 +365,6 @@ view model =
 
         Success l ->
             let 
-                
                 choco =
                     filterAndReduceChocolate l.data .index l.xAAFunction l.yAAFunction l.xName l.yName
             in
